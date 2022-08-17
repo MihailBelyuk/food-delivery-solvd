@@ -53,7 +53,8 @@ public class Courier extends Employee {
 
         Courier courier = (Courier) o;
 
-        if (deliveryType != null ? !deliveryType.equals(courier.deliveryType) : courier.deliveryType != null) return false;
+        if (deliveryType != null ? !deliveryType.equals(courier.deliveryType) : courier.deliveryType != null)
+            return false;
         return car != null ? car.equals(courier.car) : courier.car == null;
     }
 
