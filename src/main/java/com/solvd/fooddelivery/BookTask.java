@@ -13,19 +13,16 @@ public class BookTask {
         File file = new File("src/main/resources/20000 leagues under the sea.txt");
         try {
             String book = FileUtils.readFileToString(file, StandardCharsets.UTF_8).toLowerCase();
-            String[] signs = {" ", ",", ".", "\"", "!", "?", ";", ":", "-", "\n", "\r", "\t", "(", ")", "[", "]", "{", "}"};
+            String[] signs = {",", ".", "\"", "!", "?", ";", ":", "\n", "\r", "\t", "(", ")", "[", "]", "{", "}", "- ", " -", " '", "' "};
             for (String sign : signs) {
-                book = StringUtils.replace(book, sign, ",");
+                book = StringUtils.replace(book, sign, " ");
             }
-            String[] wordArray = StringUtils.split(book, ",");
-            List<String> wordList = Arrays.asList(wordArray);
-            String bookAdvanced = StringUtils.join(wordArray, " ");
-            Set<String> setOfWords = new HashSet<>(wordList);
-
+            String[] wordArray = StringUtils.split(book, " ");
+            Set<String> setOfWords = new HashSet<>(Arrays.asList(wordArray));
             Map<String, Integer> wordMap = new HashMap<>();
             for (String word : setOfWords) {
-                System.out.println(word + " " + StringUtils.countMatches(bookAdvanced, word));
-                wordMap.put(word, StringUtils.countMatches(bookAdvanced, word));
+                System.out.println(word + " " + StringUtils.countMatches(book, word));
+                wordMap.put(word, StringUtils.countMatches(book, word));
             }
             List<Map.Entry<String, Integer>> entryList = new ArrayList<>(wordMap.entrySet());
             entryList.sort(Map.Entry.comparingByValue());
