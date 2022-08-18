@@ -22,14 +22,14 @@ public abstract class Vehicle implements IRepair, IDoService {
         GAS("gas"),
         KEROSENE("kerosene");
 
-        private final String fuel;
+        private final String displayFuel;
 
-        FuelType(String fuelType) {
-            this.fuel = fuelType;
+        FuelType(String displayFuel) {
+            this.displayFuel = displayFuel;
         }
 
-        public String getFuel() {
-            return fuel;
+        public String getDisplayFuel() {
+            return displayFuel;
         }
     }
 
