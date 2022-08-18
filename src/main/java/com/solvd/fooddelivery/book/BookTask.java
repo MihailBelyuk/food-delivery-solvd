@@ -41,7 +41,7 @@ public class BookTask {
     public static void main(String[] args) {
         try {
             String book = readFile();
-            book = replacePunctuation(book);
+            book = replacePunctuationAndSpecialSigns(book);
             String[] wordArray = StringUtils.split(book, SPACE);
             Map<String, Integer> wordMap = countWordMatches(book, wordArray);
             Map<String, Integer> sortedMap = sortWordMap(wordMap);
@@ -81,7 +81,7 @@ public class BookTask {
         return sortedMap;
     }
 
-    private static String replacePunctuation(String book) {
+    private static String replacePunctuationAndSpecialSigns(String book) {
         String[] signs = {COMMA, PERIOD, QUOTATION_MARK, EXCLAMATION_MARK, QUESTION_MARK, SEMICOLON,
                 COLON, NEW_LINE_SIGN, CARRIAGE_RETURN_SIGN, TAB_SIGN, LEFT_BRACE, RIGHT_BRACE,
                 LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET,
