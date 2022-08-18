@@ -31,7 +31,6 @@ public class BookTask {
                 sortedMap.put(entry.getKey(), entry.getValue());
             }
             File sortedWords = new File("src/main/resources/sorted words.txt");
-            FileUtils.touch(sortedWords);
             FileUtils.writeStringToFile(sortedWords, String.valueOf(sortedMap), StandardCharsets.UTF_8, true);
         } catch (IOException e) {
             e.printStackTrace();
