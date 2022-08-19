@@ -18,14 +18,14 @@ public class Courier extends Employee {
         BICYCLE("bicycle"),
         ON_FOOT("on foot");
 
-        private final String meanOfDelivery;
+        private final String displayName;
 
-        DeliveryType(String meanOfDelivery) {
-            this.meanOfDelivery = meanOfDelivery;
+        DeliveryType(String displayName) {
+            this.displayName = displayName;
         }
 
-        public String getMeanOfDelivery() {
-            return meanOfDelivery;
+        public String getDisplayName() {
+            return displayName;
         }
     }
 

@@ -16,26 +16,7 @@ public class BookTask {
 
     private static final String BOOK_PATH = "src/main/resources/20000 leagues under the sea.txt";
     private static final String SORTED_WORDS_PATH = "src/main/resources/sorted words.txt";
-    private static final String COMMA = ",";
-    private static final String PERIOD = ".";
-    private static final String QUOTATION_MARK = "\"";
-    private static final String EXCLAMATION_MARK = "!";
-    private static final String QUESTION_MARK = "?";
-    private static final String SEMICOLON = ";";
-    private static final String COLON = ":";
-    private static final String NEW_LINE_SIGN = "\n";
-    private static final String CARRIAGE_RETURN_SIGN = "\r";
-    private static final String TAB_SIGN = "\t";
-    private static final String LEFT_BRACE = "(";
-    private static final String RIGHT_BRACE = ")";
-    private static final String RIGHT_SQUARE_BRACKET = "]";
-    private static final String LEFT_SQUARE_BRACKET = "[";
-    private static final String LEFT_CURLY_BRACKET = "{";
-    private static final String RIGHT_CURLY_BRACKET = "}";
-    private static final String DASH_SPACE = "- ";
-    private static final String SPACE_DASH = " -";
-    private static final String SPACE_SINGLE_QUOTE = " '";
-    private static final String SINGLE_QUOTE_SPACE = "' ";
+    private static final String[] SIGNS = {",", ".", "\"", "!", "?", ";", ":", "\n", "\r", "\t", "(", ")", "]", "[", "{", "}", "- ", " -", " '", "' "};
     private static final String SPACE = " ";
 
     public static void main(String[] args) {
@@ -82,11 +63,7 @@ public class BookTask {
     }
 
     private static String replacePunctuationAndSpecialSigns(String book) {
-        String[] signs = {COMMA, PERIOD, QUOTATION_MARK, EXCLAMATION_MARK, QUESTION_MARK, SEMICOLON,
-                COLON, NEW_LINE_SIGN, CARRIAGE_RETURN_SIGN, TAB_SIGN, LEFT_BRACE, RIGHT_BRACE,
-                LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET,
-                DASH_SPACE, SPACE_DASH, SPACE_SINGLE_QUOTE, SINGLE_QUOTE_SPACE};
-        for (String sign : signs) {
+        for (String sign : SIGNS) {
             book = StringUtils.replace(book, sign, SPACE);
         }
         return book;

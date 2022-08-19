@@ -142,7 +142,7 @@ public class Main {
             stringBuilder
                     .append(fuelType)
                     .append("-")
-                    .append(fuelType.getDisplayFuel())
+                    .append(fuelType.getDisplayName())
                     .append("; ");
         }
         LOGGER.info(stringBuilder);
@@ -164,7 +164,7 @@ public class Main {
         }
 
         for (Courier cour : delivery.getCouriers()) {
-            LOGGER.info(cour.getDeliveryType().getMeanOfDelivery());
+            LOGGER.info(cour.getDeliveryType().getDisplayName());
         }
     }
 }

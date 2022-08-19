@@ -11,13 +11,13 @@ public enum District {
     MOSKOVSKIY("moskovskiy"),
     FRUNZENSKIY("frunzenskiy");
 
-    private final String name;
+    private final String displayName;
 
-    District(String name) {
-        this.name = name;
+    District(String displayName) {
+        this.displayName = displayName;
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 }
