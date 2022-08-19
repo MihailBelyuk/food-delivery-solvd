@@ -27,7 +27,7 @@ public class DeliveryService {
         Order order = orders.get(0);
         Courier courier = order.getCourier();
         Client client = order.getClient();
-        int courierSpeed = CourierService.adjustCourierSpeed(courier.getCourierType());
+        int courierSpeed = CourierService.adjustCourierSpeed(courier.getDeliveryType());
         double clientDistance = OrderService.showDeliveryDistance(client.getAddress());
         int orderPrepareTime = 0;
         for (Dish dish : order.getDishes()) {

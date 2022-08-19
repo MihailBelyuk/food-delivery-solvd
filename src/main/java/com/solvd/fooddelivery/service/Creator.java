@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.solvd.fooddelivery.entity.person.CourierType.*;
+import static com.solvd.fooddelivery.entity.person.Courier.DeliveryType.*;
 import static java.time.Month.*;
 
 public class Creator {
@@ -25,11 +25,11 @@ public class Creator {
     public static List<Courier> createCouriers() {
         List<Courier> couriers = new ArrayList<>();
         Courier andrey = new Courier("Andrey", LocalDate.of(1990, JANUARY, 2));
-        andrey.setCourierType(CAR);
+        andrey.setDeliveryType(CAR);
         Courier vasia = new Courier("Vasia", LocalDate.of(1991, MARCH, 3));
-        vasia.setCourierType(ON_FOOT);
+        vasia.setDeliveryType(ON_FOOT);
         Courier petya = new Courier("Petya", LocalDate.of(1992, APRIL, 4));
-        petya.setCourierType(BICYCLE);
+        petya.setDeliveryType(BICYCLE);
         couriers.add(andrey);
         couriers.add(vasia);
         couriers.add(petya);

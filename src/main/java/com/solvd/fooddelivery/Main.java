@@ -11,6 +11,7 @@ import com.solvd.fooddelivery.entity.person.Client;
 import com.solvd.fooddelivery.entity.person.Courier;
 import com.solvd.fooddelivery.entity.person.Employee;
 import com.solvd.fooddelivery.entity.vehicle.Car;
+import com.solvd.fooddelivery.entity.vehicle.Vehicle;
 import com.solvd.fooddelivery.entity.vehicle.WvGolf;
 import com.solvd.fooddelivery.exception.TooBigValueException;
 import com.solvd.fooddelivery.service.*;
@@ -48,6 +49,7 @@ public class Main {
         LOGGER.info("Show map keys: " + restaurantMap.keySet());
 
         Car lancer = new Car("Mitsubishi Lancer EVO X", 15_000);
+        lancer.setFuelType(Vehicle.FuelType.GASOLINE);
         VehicleService.replaceWheel(lancer);
 
         Client client = new Client("Hugh Laurie", LocalDate.of(1959, 6, 11));
@@ -57,7 +59,7 @@ public class Main {
 
         Address address = new Address();
         address.setCity("Minsk");
-        address.setDistrict("Central");
+        address.setDistrict(District.CENTRAL);
         address.setStreet("Prospekt nezavisimosti");
         address.setHouseNumber("56");
         client.setAddress(address);
@@ -131,7 +133,19 @@ public class Main {
         LOGGER.info("Restaurants left after removal: " + restaurantMap.values());
 
         Car wrx = new Car("Subaru WRX STI", 20_000);
+        wrx.setFuelType(Vehicle.FuelType.GASOLINE);
         Car skyline = new Car("Nissan Skyline", 10_000);
+        skyline.setFuelType(Vehicle.FuelType.GASOLINE);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Vehicle.FuelType fuelType : Vehicle.FuelType.values()) {
+            stringBuilder
+                    .append(fuelType)
+                    .append("-")
+                    .append(fuelType.getDisplayName())
+                    .append("; ");
+        }
+        LOGGER.info(stringBuilder);
 
         Set<Car> carSet = new HashSet<>();
         carSet.add(lancer);
@@ -147,6 +161,10 @@ public class Main {
         LOGGER.info("Car set with one more (same config) lancer added: ");
         while (iterator.hasNext()) {
             LOGGER.info(iterator.next().getBrand());
+        }
+
+        for (Courier cour : delivery.getCouriers()) {
+            LOGGER.info(cour.getDeliveryType().getDisplayName());
         }
     }
 }

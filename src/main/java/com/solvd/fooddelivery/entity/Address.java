@@ -1,9 +1,11 @@
 package com.solvd.fooddelivery.entity;
 
+import com.solvd.fooddelivery.service.District;
+
 public class Address {
 
     private String city;
-    private String district;
+    private District district;
     private String street;
     private String houseNumber;
     private int flatNumber;
@@ -16,11 +18,11 @@ public class Address {
         this.city = city;
     }
 
-    public String getDistrict() {
+    public District getDistrict() {
         return district;
     }
 
-    public void setDistrict(String district) {
+    public void setDistrict(District district) {
         this.district = district;
     }
 
