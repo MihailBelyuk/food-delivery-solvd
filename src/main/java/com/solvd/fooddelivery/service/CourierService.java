@@ -1,10 +1,10 @@
 package com.solvd.fooddelivery.service;
 
-import com.solvd.fooddelivery.entity.person.CourierType;
+import com.solvd.fooddelivery.entity.person.Courier;
 
 public class CourierService {
 
-    public static int adjustCourierSpeed(CourierType courierType) {
+    public static int adjustCourierSpeed(Courier.DeliveryType courierType) {
         int speed = 0;
         switch (courierType) {
             case BICYCLE:

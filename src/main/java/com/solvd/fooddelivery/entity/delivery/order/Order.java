@@ -2,6 +2,7 @@ package com.solvd.fooddelivery.entity.delivery.order;
 
 import com.solvd.fooddelivery.entity.delivery.restaurant.Restaurant;
 import com.solvd.fooddelivery.entity.delivery.restaurant.food.Dish;
+import com.solvd.fooddelivery.entity.delivery.restaurant.food.Drink;
 import com.solvd.fooddelivery.entity.person.Client;
 import com.solvd.fooddelivery.entity.person.Courier;
 
@@ -16,6 +17,7 @@ public abstract class Order {
     private Courier courier;
     private Client client;
     private List<Dish> dishes;
+    private List<Drink> drinks;
     private Restaurant restaurant;
     private Payment payment;
     private LocalDateTime creationTime;
@@ -103,6 +105,14 @@ public abstract class Order {
         this.payment = payment;
     }
 
+    public List<Drink> getDrinks() {
+        return drinks;
+    }
+
+    public void setDrinks(List<Drink> drinks) {
+        this.drinks = drinks;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -112,21 +122,23 @@ public abstract class Order {
 
         if (deliveryDistance != order.deliveryDistance) return false;
         if (discount != order.discount) return false;
-        if (restaurant != null ? !restaurant.equals(order.restaurant) : order.restaurant != null) return false;
         if (courier != null ? !courier.equals(order.courier) : order.courier != null) return false;
         if (client != null ? !client.equals(order.client) : order.client != null) return false;
-        if (payment != null ? !payment.equals(order.payment) : order.payment != null) return false;
         if (dishes != null ? !dishes.equals(order.dishes) : order.dishes != null) return false;
+        if (drinks != null ? !drinks.equals(order.drinks) : order.drinks != null) return false;
+        if (restaurant != null ? !restaurant.equals(order.restaurant) : order.restaurant != null) return false;
+        if (payment != null ? !payment.equals(order.payment) : order.payment != null) return false;
         return creationTime != null ? creationTime.equals(order.creationTime) : order.creationTime == null;
     }
 
     @Override
     public int hashCode() {
-        int result = restaurant != null ? restaurant.hashCode() : 0;
-        result = 31 * result + (courier != null ? courier.hashCode() : 0);
+        int result = courier != null ? courier.hashCode() : 0;
         result = 31 * result + (client != null ? client.hashCode() : 0);
-        result = 31 * result + (payment != null ? payment.hashCode() : 0);
         result = 31 * result + (dishes != null ? dishes.hashCode() : 0);
+        result = 31 * result + (drinks != null ? drinks.hashCode() : 0);
+        result = 31 * result + (restaurant != null ? restaurant.hashCode() : 0);
+        result = 31 * result + (payment != null ? payment.hashCode() : 0);
         result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
         result = 31 * result + deliveryDistance;
         result = 31 * result + discount;
@@ -136,11 +148,12 @@ public abstract class Order {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Order{");
-        sb.append("restaurant=").append(restaurant);
-        sb.append(", courier=").append(courier);
+        sb.append("courier=").append(courier);
         sb.append(", client=").append(client);
-        sb.append(", payment=").append(payment);
         sb.append(", dishes=").append(dishes);
+        sb.append(", drinks=").append(drinks);
+        sb.append(", restaurant=").append(restaurant);
+        sb.append(", payment=").append(payment);
         sb.append(", creationTime=").append(creationTime);
         sb.append(", deliveryDistance=").append(deliveryDistance);
         sb.append(", discount=").append(discount);

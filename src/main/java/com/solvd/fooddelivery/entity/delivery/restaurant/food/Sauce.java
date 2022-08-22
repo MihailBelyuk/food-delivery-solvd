@@ -8,6 +8,5 @@ public class Sauce extends Food implements IPrepare<Food> {
 
     @Override
     public void prepare(Food food) {
-
     }
 }
