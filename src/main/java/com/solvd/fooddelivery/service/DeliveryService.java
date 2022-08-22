@@ -8,6 +8,7 @@ import com.solvd.fooddelivery.entity.person.Client;
 import com.solvd.fooddelivery.entity.person.Courier;
 import com.solvd.fooddelivery.entity.person.Human;
 import com.solvd.fooddelivery.entity.vehicle.CivilVehicle;
+import com.solvd.fooddelivery.exception.EmptyOrderException;
 import com.solvd.fooddelivery.exception.NegativeQuantityException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,10 +30,13 @@ public class DeliveryService {
         Client client = order.getClient();
         int courierSpeed = CourierService.adjustCourierSpeed(courier.getCourierType());
         double clientDistance = OrderService.showDeliveryDistance(client.getAddress());
-        int orderPrepareTime = 0;
-        for (Dish dish : order.getDishes()) {
-            int dishSetPrepareTime = dish.getDishQuantity() * dish.getPrepareTimeMinutes();
-            orderPrepareTime = orderPrepareTime + dishSetPrepareTime;
+        List<Dish> orderDishes = order.getDishes();
+        int orderPrepareTime = orderDishes.stream()
+                .mapToInt(dish -> dish.getDishQuantity() * dish.getDishQuantity())
+                .sum();
+        if (orderPrepareTime == 0) {
+            LOGGER.info("Failed to count delivery time, because there are no items in the order.");
+            throw new EmptyOrderException("Failed to count delivery time, because there are no items in the order.");
         }
         return clientDistance / courierSpeed * MINUTES_IN_HOUR + orderPrepareTime;
     }
@@ -41,6 +45,8 @@ public class DeliveryService {
         List<Order> orders = delivery.getOrders();
         Order order = orders.get(0);
         BigDecimal orderPrice = new BigDecimal(0);
+        List<Dish> dishes = order.getDishes();
+        dishes.forEach(dish -> dish.getPrice().multiply(new BigDecimal(dish.getDishQuantity()))); // TODO: 8/22/2022  
         for (Dish dish : order.getDishes()) {
             BigDecimal dishSetPrice = dish.getPrice().multiply(new BigDecimal(dish.getDishQuantity()));
             orderPrice = orderPrice.add(dishSetPrice);

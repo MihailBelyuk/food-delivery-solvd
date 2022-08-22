@@ -66,30 +66,30 @@ public class Main {
 
         List<Dish> orderDishes = new ArrayList<>();
         Dish dish1 = restaurant.getDishes().get(1);
-        dish1.setDishQuantity(2);
+        dish1.setDishQuantity(0);
         Dish dish2 = restaurant.getDishes().get(0);
-        dish2.setDishQuantity(5);
+        dish2.setDishQuantity(0);
         orderDishes.add(dish1);
         orderDishes.add(dish2);
 
         Courier courier = delivery.getCouriers().get(1);
         courier.setCar(new WvGolf("WV Golf", 30_000));
-        Car car = courier.getCar();
-        car.setOdometerCurrent(1000_000_000);
-        car.setNextAirFilterService(45_000);
+        Car courierCar = courier.getCar();
+        courierCar.setOdometerCurrent(1000_000_000);
+        courierCar.setNextAirFilterService(45_000);
 
         try {
-            VehicleService.changeOil(car);
+            VehicleService.changeOil(courierCar);
         } catch (TooBigValueException e) {
             LOGGER.error("Caught 'TooBigValueException'. ", e);
         } finally {
             LOGGER.info("Set default value for the odometer in finally block.");
             int odometerDefault = 100_000;
-            car.setOdometerCurrent(odometerDefault);
+            courierCar.setOdometerCurrent(odometerDefault);
         }
 
-        VehicleService.checkAirFilter(car);
-        VehicleService.checkIfRepairIsNeeded(car);
+        VehicleService.checkAirFilter(courierCar);
+        VehicleService.checkIfRepairIsNeeded(courierCar);
 
         int deliveryDistance = OrderService.showDeliveryDistance(client.getAddress());
 
@@ -118,9 +118,7 @@ public class Main {
         LOGGER.info("Number of dishes in restaurant menu." + RestaurantService.countDishes(restaurant));
 
         List<Dish> dishes1 = order.getDishes();
-        for (Dish meal : dishes1) {
-            RestaurantService.prepareDish(meal);
-        }
+        dishes1.forEach(RestaurantService::prepareDish);
 
         if (dishes.containsKey("burger king dishes")) {
             dishes.get("burger king dishes").remove(0);
@@ -138,16 +136,11 @@ public class Main {
         carSet.add(wrx);
         carSet.add(skyline);
         LOGGER.info("Cars in set: ");
-        for (Car c : carSet) {
-            LOGGER.info(c.getBrand());
-        }
+        carSet.forEach(car -> LOGGER.info(car.getBrand()));
 
         carSet.add(lancer);
-        Iterator<Car> iterator = carSet.iterator();
         LOGGER.info("Car set with one more (same config) lancer added: ");
-        while (iterator.hasNext()) {
-            LOGGER.info(iterator.next().getBrand());
-        }
+        carSet.forEach(car -> LOGGER.info(car.getBrand()));
     }
 }
 
