@@ -117,7 +117,7 @@ public class Creator {
         return dishIngredients;
     }
 
-    public static Map<String, List<Dish>> createDishes(Map<String, List<Ingredient>> dishIngredients) {
+    public static  Map<String, List<Dish>> createDishes(Map<String, List<Ingredient>> dishIngredients) {
         Map<String, List<Dish>> restaurantDishes = new HashMap<>();
 
         List<Dish> pizzaHutDishes = new ArrayList<>();
@@ -134,7 +134,6 @@ public class Creator {
         Dish hotWings = new FriedChicken("Hot wings", 4);
         hotWings.setIngredients(dishIngredients.get("hot wings"));
         hotWings.setPrice(new BigDecimal(7));
-        hotWings.setSpicy(true);
         Dish nuggets = new FriedChicken("Nuggets", 8);
         nuggets.setIngredients(dishIngredients.get("nuggets"));
         nuggets.setPrice(new BigDecimal(9));

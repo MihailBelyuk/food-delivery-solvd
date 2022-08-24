@@ -7,43 +7,45 @@ import com.solvd.fooddelivery.entity.delivery.order.Order;
 import com.solvd.fooddelivery.entity.delivery.restaurant.Restaurant;
 import com.solvd.fooddelivery.entity.delivery.restaurant.food.Dish;
 import com.solvd.fooddelivery.entity.delivery.restaurant.food.ingredient.Ingredient;
-import com.solvd.fooddelivery.entity.person.Client;
-import com.solvd.fooddelivery.entity.person.Courier;
-import com.solvd.fooddelivery.entity.person.Employee;
-import com.solvd.fooddelivery.entity.vehicle.Car;
-import com.solvd.fooddelivery.entity.vehicle.Vehicle;
-import com.solvd.fooddelivery.entity.vehicle.WvGolf;
+import com.solvd.fooddelivery.entity.person.*;
+import com.solvd.fooddelivery.entity.vehicle.*;
+import com.solvd.fooddelivery.exception.DistanceException;
 import com.solvd.fooddelivery.exception.TooBigValueException;
 import com.solvd.fooddelivery.service.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Main {
-
-    static {
-        System.setProperty("log4j.configurationFile", "log4j2.xml");
-    }
 
     public static final Logger LOGGER = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
         Delivery delivery = new Delivery();
 
+        Director director = new Director("Neskey Dmitri", LocalDate.of(1988, 2, 15));
+        director.setName("Vasil' Petrovich");
+
         Map<String, List<Ingredient>> ingredients = Creator.createIngredients();
-        for (Map.Entry<String, List<Ingredient>> entry : ingredients.entrySet()) {
-            List<Ingredient> ingredientsList = entry.getValue();
-            for (Ingredient ingredient : ingredientsList) {
-                ingredient.setPresent(true);
-            }
-        }
+        ingredients.values().forEach(ingredientsValue -> ingredientsValue.forEach(ingredient -> ingredient.setPresent(true)));
 
         Map<String, List<Dish>> dishes = Creator.createDishes(ingredients);
         delivery.setRestaurants(Creator.createFastFoodRestaurants(dishes));
         delivery.setCouriers(Creator.createCouriers());
 
+        dishes.values().forEach(dishes1 -> dishes1.stream()
+                .filter(dish -> "Hot wings".equals(dish.getName()))
+                .forEach(dish -> dish.setSpicy(true)));
+
+        LOGGER.info(dishes);
         Map<String, Restaurant> restaurantMap = delivery.getRestaurants();
         LOGGER.info("Show entry set: " + restaurantMap.entrySet());
         LOGGER.info("Show map keys: " + restaurantMap.keySet());
@@ -68,16 +70,26 @@ public class Main {
 
         List<Dish> orderDishes = new ArrayList<>();
         Dish dish1 = restaurant.getDishes().get(1);
-        dish1.setDishQuantity(0);
+        dish1.setDishQuantity(1);
+        dish1.setPrice(new BigDecimal(1));
         Dish dish2 = restaurant.getDishes().get(0);
-        dish2.setDishQuantity(0);
+        dish2.setDishQuantity(1);
+        dish2.setPrice(new BigDecimal(1));
         orderDishes.add(dish1);
         orderDishes.add(dish2);
+
+        LOGGER.info("First element: " + orderDishes.stream()
+                .findFirst().orElse(new Dish("Draniki", 120)));
+        LOGGER.info("Count salt usage in dishes: " + orderDishes.stream()
+                .flatMap(dish -> dish.getIngredients().stream().filter(ingredient -> "salt".equals(ingredient.getName())))
+                .count());
+        LOGGER.info("Show all ingredients: " + orderDishes.stream()
+                .map(dish -> new ArrayList<>(dish.getIngredients())).collect(Collectors.toList()));
 
         Courier courier = delivery.getCouriers().get(1);
         courier.setCar(new WvGolf("WV Golf", 30_000));
         Car courierCar = courier.getCar();
-        courierCar.setOdometerCurrent(1000_000_000);
+        courierCar.setOdometerCurrent(1_000_000_000);
         courierCar.setNextAirFilterService(45_000);
 
         try {
@@ -93,7 +105,7 @@ public class Main {
         VehicleService.checkAirFilter(courierCar);
         VehicleService.checkIfRepairIsNeeded(courierCar);
 
-        int deliveryDistance = OrderService.showDeliveryDistance(client.getAddress());
+        Integer deliveryDistance = OrderService.showDeliveryDistance(client.getAddress()).orElseThrow(DistanceException::new);
 
         List<Order> orders = new ArrayList<>();
         GeneralOrder order = new GeneralOrder(courier, client, deliveryDistance);
@@ -122,10 +134,9 @@ public class Main {
         List<Dish> dishes1 = order.getDishes();
         dishes1.forEach(RestaurantService::prepareDish);
 
-        if (dishes.containsKey("burger king dishes")) {
-            dishes.get("burger king dishes").remove(0);
-            LOGGER.info("Dishes keySet after removal: " + dishes.keySet());
-        }
+        LOGGER.info(dishes.keySet().stream()
+                .filter("burger king dishes"::equals)
+                .peek(key -> dishes.get(key).remove(0)) + "Dishes keySet after removal: " + dishes);
 
         restaurantMap.remove("kfc");
         LOGGER.info("Restaurants left after removal: " + restaurantMap.values());
@@ -135,15 +146,13 @@ public class Main {
         Car skyline = new Car("Nissan Skyline", 10_000);
         skyline.setFuelType(Vehicle.FuelType.GASOLINE);
 
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Vehicle.FuelType fuelType : Vehicle.FuelType.values()) {
-            stringBuilder
-                    .append(fuelType)
-                    .append("-")
-                    .append(fuelType.getDisplayName())
-                    .append("; ");
-        }
-        LOGGER.info(stringBuilder);
+        LOGGER.info(Arrays.stream(Vehicle.FuelType.values())
+                .map(ft -> {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(ft).append("-").append(ft.getDisplayName());
+                    return sb;
+                })
+                .collect(Collectors.toList()));
 
         Set<Car> carSet = new HashSet<>();
         carSet.add(lancer);
@@ -156,14 +165,42 @@ public class Main {
         LOGGER.info("Car set with one more (same config) lancer added: ");
 
         carSet.forEach(car -> LOGGER.info(car.getBrand()));
-        for (Courier cour : delivery.getCouriers()) {
-            LOGGER.info(cour.getDeliveryType().getDisplayName());
-        }
+        delivery.getCouriers().forEach(cour -> LOGGER.info(cour.getDeliveryType().getDisplayName()));
 
+        double orderPrepareMinutes = DeliveryService.countDeliveryTime(delivery);
+
+        ICarry<Human<CivilVehicle>> documentCarrier = dir -> LOGGER.info(dir.getName() + " is signing employee contracts.");
+        ICarry<Human<CivilVehicle>> orderCarrier = courierOnDelivery -> {
+            LOGGER.info("Courier " + courierOnDelivery.getName() + " picked up order from the restaurant.");
+            LOGGER.info("Courier " + courierOnDelivery.getName() + " is on his way to the client.");
+        };
+        HumanService.showDayActivity(orderCarrier, courier);
+        HumanService.showDayActivity(documentCarrier, director);
+
+        IConvert<Double> minutesToHoursConverter = (orderPrepareMin) -> orderPrepareMin / 60;
+        LOGGER.info("Order prepare minutes, converted to hours: " +
+                CustomService.convertMinutesToHours(minutesToHoursConverter, orderPrepareMinutes));
+
+        IChange deliveryTypeChanger = () -> LOGGER.info("Delivery type has been changed.");
+        CourierService.changeDeliveryType(deliveryTypeChanger, courier);
+
+        Predicate<Restaurant> checkQuantity = (Restaurant -> (long) Restaurant.getDishes().size() >= 1);
+        LOGGER.info("Restaurants with 1 or more dishes in menu" + RestaurantService.checkDishQuantity(checkQuantity, delivery));
+
+        SparePart enkei = new Wheel();
+        enkei.setBrand("Enkei");
+        try {
+            Class<Car> carClass = (Class<Car>) Class.forName("com.solvd.fooddelivery.entity.vehicle.Car");
+            Constructor<Car> carConstructor = carClass.getDeclaredConstructor(String.class, Integer.class);
+            Car car = carConstructor.newInstance("Audi", 15_000);
+            car.checkIfEngineOilChangeNeeded();
+            Method carMethod = carClass.getDeclaredMethod("replace", SparePart.class);
+            carMethod.invoke(car, enkei);
+            Field field = carClass.getDeclaredField("oilServicePeriod");
+            field.setAccessible(true);
+            LOGGER.info("Field data: " + field);
+        } catch (Exception e) {
+            LOGGER.info("Failed to perform reflection.");
+        }
     }
 }
-
-
-
-
-

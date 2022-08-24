@@ -5,7 +5,7 @@ import com.solvd.fooddelivery.entity.person.ICountTimePeriod;
 
 public class ClientService {
 
-    public static int countAge(ICountTimePeriod iCountTimePeriod) {
+    public static Integer countAge(ICountTimePeriod iCountTimePeriod) {
         Client client = (Client) iCountTimePeriod;
         return client.countYears();
     }

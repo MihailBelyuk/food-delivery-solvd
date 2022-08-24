@@ -21,11 +21,9 @@ public class Dish extends Food implements ICook {
     @Override
     public void cook() {
         List<Ingredient> ingredients = getIngredients();
-        if (!ingredients.iterator().next().isPresent()) {
-            LOGGER.info("There is/are no " + ingredients.iterator().next().getName() + " to cook the " + getName());
-        } else {
-            LOGGER.info(getDishQuantity() + " " + getName() + " is/are cooked.");
-        }
+        LOGGER.info(ingredients.stream().
+                iterator().next().isPresent() ? getDishQuantity() + " " + getName() + " is/are cooked." :
+                "There is/are no " + ingredients.iterator().next().getName() + " to cook the " + getName());
     }
 
     @Override

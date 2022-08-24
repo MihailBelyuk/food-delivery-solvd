@@ -6,7 +6,7 @@
 
     <groupId>com.solvd</groupId>
     <artifactId>fooddelivery</artifactId>
-    <version>8.0.2-SNAPSHOT</version>
+    <version>8.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>

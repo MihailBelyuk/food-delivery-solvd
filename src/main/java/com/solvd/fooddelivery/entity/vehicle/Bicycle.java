@@ -1,6 +1,5 @@
 package com.solvd.fooddelivery.entity.vehicle;
 
-import com.solvd.fooddelivery.exception.TooBigValueException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,13 +10,12 @@ public class Bicycle extends CivilVehicle {
     private String size;
 
     @Override
-    public void replace(SparePart sparePart) {
-        LOGGER.info(sparePart.getClass().getName() + " " + sparePart.getBrand() + " has been replaced.");
+    public void diagnose() {
     }
 
     @Override
-    public void change() throws TooBigValueException {
-
+    public void replace(SparePart sparePart) {
+        LOGGER.info(sparePart.getClass().getName() + " " + sparePart.getBrand() + " has been replaced.");
     }
 
     public Bicycle(String brand) {

@@ -11,15 +11,15 @@ public class Car extends CivilVehicle implements IDoCarService, IDoCarRepair {
     private static final int AIR_FILTER_SERVICE_PERIOD = 30_000;
     private int oilServicePeriod;
 
+    private Integer nextOilService;
     private int horsePower;
     private int fuelConsumption;
     private int odometerCurrent;
-    private int nextOilService;
     private int nextAirFilterService;
     private boolean oilChanged;
     private boolean airFilterChanged;
 
-    public Car(String brand, int nextOilService) {
+    public Car(String brand, Integer nextOilService) {
         super(brand);
         this.nextOilService = nextOilService;
     }
@@ -30,12 +30,8 @@ public class Car extends CivilVehicle implements IDoCarService, IDoCarRepair {
     }
 
     @Override
-    public boolean checkIfEngineOilChangeNeeded() throws TooBigValueException {
-        if (FuelType.DIESEL.equals(getFuelType())) {
-            oilServicePeriod = 15_000;
-        } else {
-            oilServicePeriod = 10_000;
-        }
+    public void checkIfEngineOilChangeNeeded() throws TooBigValueException {
+        oilServicePeriod = FuelType.DIESEL.equals(getFuelType()) ? 15_000 : 10_000;
         if (oilChanged) {
             setNextOilService(this.nextOilService + oilServicePeriod);
         }
@@ -46,31 +42,25 @@ public class Car extends CivilVehicle implements IDoCarService, IDoCarRepair {
         }
         if (index <= 0.93) {
             LOGGER.info("Oil replace is not needed.");
-            return false;
         } else if (index > 0.93 && index <= 1.03) {
             LOGGER.info("Oil needs to be changed.");
-            return true;
         } else {
             LOGGER.info("Change oil as soon as possible.");
-            return true;
         }
     }
 
     @Override
-    public boolean checkIfAirFilterReplacementNeeded() {
+    public void checkIfAirFilterReplacementNeeded() {
         if (airFilterChanged) {
             setNextOilService(this.nextAirFilterService + AIR_FILTER_SERVICE_PERIOD);
         }
         double index = getOdometerCurrent() / (double) getNextAirFilterService();
         if (index <= 0.93) {
             LOGGER.info("Air filter replace is not needed.");
-            return false;
         } else if (index > 0.93 && index <= 1.03) {
             LOGGER.info("Air filter needs to be changed.");
-            return true;
         } else {
             LOGGER.info("Change air filter as soon as possible.");
-            return true;
         }
     }
 
@@ -80,11 +70,10 @@ public class Car extends CivilVehicle implements IDoCarService, IDoCarRepair {
     }
 
     @Override
-    public void change() throws TooBigValueException {
-        if (checkIfEngineOilChangeNeeded()) {
-            LOGGER.info("Air filter has been changed.");
-        }
+    public void diagnose() throws TooBigValueException {
+        LOGGER.info("Computer diagnosis is being done.");
     }
+
 
     public int getNextAirFilterService() {
         return nextAirFilterService;
@@ -134,11 +123,11 @@ public class Car extends CivilVehicle implements IDoCarService, IDoCarRepair {
         this.odometerCurrent = odometerCurrent;
     }
 
-    public int getNextOilService() {
+    public Integer getNextOilService() {
         return nextOilService;
     }
 
-    public void setNextOilService(int nextOilService) {
+    public void setNextOilService(Integer nextOilService) {
         this.nextOilService = nextOilService;
     }
 

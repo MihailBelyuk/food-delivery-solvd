@@ -4,8 +4,8 @@ import com.solvd.fooddelivery.exception.TooBigValueException;
 
 public interface IDoCarService extends IDoService {
 
-    boolean checkIfEngineOilChangeNeeded() throws TooBigValueException;
+    void checkIfEngineOilChangeNeeded() throws TooBigValueException;
 
-    boolean checkIfAirFilterReplacementNeeded();
+    void checkIfAirFilterReplacementNeeded();
 
 }

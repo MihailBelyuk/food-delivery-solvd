@@ -35,11 +35,7 @@ public abstract class Vehicle implements IRepair, IDoService {
 
     @Override
     public void checkIfNeedsRepair() {
-        if (isNeedsRepair()) {
-            LOGGER.info("Repair is NEEDED.");
-        } else {
-            LOGGER.info("Repair is NOT needed.");
-        }
+        LOGGER.info(isNeedsRepair() ? "Repair is NEEDED." : "Repair is NOT needed.");
     }
 
     public int getMaxSpeed() {
