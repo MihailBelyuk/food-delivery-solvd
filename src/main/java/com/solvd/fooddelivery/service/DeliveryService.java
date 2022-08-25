@@ -36,7 +36,7 @@ public class DeliveryService {
                 .mapToInt(dish -> dish.getDishQuantity() * dish.getDishQuantity())
                 .sum();
         if (orderPrepareTime == 0) {
-            LOGGER.info("Failed to count delivery time, because there are no items in the order.");
+            LOGGER.error("Failed to count delivery time, because there are no items in the order.");
             throw new EmptyOrderException("Failed to count delivery time, because there are no items in the order.");
         }
         return clientDistance / courierSpeed * MINUTES_IN_HOUR + orderPrepareTime;

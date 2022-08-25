@@ -21,8 +21,9 @@ public class GeneralOrder extends Order {
 
     @Override
     public BigDecimal countOrderPriceWithDiscount(List<Dish> dishes) {
-        if (dishes.stream()
-                .anyMatch(dish -> dish.getPrice().compareTo(BigDecimal.ZERO) < 0)) {
+        boolean priceCompare = dishes.stream()
+                .anyMatch(dish -> dish.getPrice().compareTo(BigDecimal.ZERO) < 0);
+        if (priceCompare) {
             LOGGER.error("Negative price value is present.");
             throw new NegativePriceValueException("Negative price value is present.");
         }

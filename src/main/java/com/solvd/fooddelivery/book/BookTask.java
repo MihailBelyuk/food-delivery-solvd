@@ -29,7 +29,7 @@ public class BookTask {
             Map<String, Integer> sortedMap = sortWordMap(wordMap);
             createSortedWordsFile(sortedMap);
         } catch (IOException e) {
-            LOGGER.info("Failed to read/write information from/to file.");
+            LOGGER.error("Failed to read/write information from/to file.");
         }
     }
 
@@ -55,11 +55,9 @@ public class BookTask {
     }
 
     private static Map<String, Integer> sortWordMap(Map<String, Integer> wordMap) {
-        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(wordMap.entrySet());
-        entryList.sort(Map.Entry.comparingByValue());
-        return entryList.stream()
-                .collect(Collectors
-                        .toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
+        return wordMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
     }
 
     private static String replacePunctuationAndSpecialSigns(String book) {

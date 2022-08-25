@@ -183,7 +183,6 @@ public class Main {
 
         carSet.add(lancer);
         LOGGER.info("Car set with one more (same config) lancer added: ");
-
         carSet.forEach(car -> LOGGER.info(car.getBrand()));
         delivery.getCouriers().forEach(cour -> LOGGER.info(cour.getDeliveryType().getDisplayName()));
 
@@ -235,7 +234,7 @@ public class Main {
             field.setAccessible(true);
             LOGGER.info("Field data: " + field);
         } catch (Exception e) {
-            LOGGER.info("Failed to perform reflection.");
+            LOGGER.error("Failed to perform reflection.");
         }
     }
 

@@ -23,8 +23,9 @@ public class SpecialOrder extends Order {
 
     @Override
     public BigDecimal countOrderPriceWithDiscount(List<Dish> dishes) {
-        if (dishes.stream()
-                .anyMatch(dish -> dish.getPrice().compareTo(BigDecimal.ZERO) < 0)) {
+        boolean priceCompare = dishes.stream()
+                .anyMatch(dish -> dish.getPrice().compareTo(BigDecimal.ZERO) < 0);
+        if (priceCompare) {
             LOGGER.error("Price value is negative.");
             throw new NegativePriceValueException("Price value is negative.");
         }

@@ -20,6 +20,8 @@ public class RestaurantService {
     }
 
     public static List<Restaurant> checkDishQuantity(Predicate<Restaurant> predicate, Delivery delivery) {
-        return delivery.getRestaurants().values().stream().filter(predicate).collect(Collectors.toList());
+        return delivery.getRestaurants().values().stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
     }
 }
