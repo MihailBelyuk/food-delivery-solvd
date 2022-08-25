@@ -46,14 +46,11 @@ public class BookTask {
     private static Map<String, Integer> countWordMatches(String book, String[] wordArray) {
         Set<String> setOfWords = new HashSet<>(Arrays.asList(wordArray));
         Map<String, Integer> wordMap = new HashMap<>();
-        LOGGER.info(setOfWords.stream()
-                .peek(LOGGER::info)
-                .map(word -> {
-                    String wordWithCount = word + SPACE + StringUtils.countMatches(book, word);
-                    wordMap.put(word, StringUtils.countMatches(book, word));
-                    return wordWithCount;
-                })
-                .collect(Collectors.toList()));
+        List<String> wordSpaceCount = setOfWords.stream()
+                .map(word -> word + SPACE + StringUtils.countMatches(book, word))
+                .collect(Collectors.toList());
+        LOGGER.info(wordSpaceCount);
+        setOfWords.forEach(word -> wordMap.put(word, StringUtils.countMatches(book, word)));
         return wordMap;
     }
 

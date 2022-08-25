@@ -6,6 +6,7 @@ import com.solvd.fooddelivery.entity.delivery.order.GeneralOrder;
 import com.solvd.fooddelivery.entity.delivery.order.Order;
 import com.solvd.fooddelivery.entity.delivery.restaurant.Restaurant;
 import com.solvd.fooddelivery.entity.delivery.restaurant.food.Dish;
+import com.solvd.fooddelivery.entity.delivery.restaurant.food.Food;
 import com.solvd.fooddelivery.entity.delivery.restaurant.food.ingredient.Ingredient;
 import com.solvd.fooddelivery.entity.person.*;
 import com.solvd.fooddelivery.entity.vehicle.*;
@@ -21,7 +22,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -45,7 +46,11 @@ public class Main {
                 .filter(dish -> "Hot wings".equals(dish.getName()))
                 .forEach(dish -> dish.setSpicy(true)));
 
-        LOGGER.info(dishes);
+        LOGGER.info(dishes.values().stream()
+                .flatMap(Collection::stream)
+                .map(Food::getName)
+                .collect(Collectors.toList()));
+
         Map<String, Restaurant> restaurantMap = delivery.getRestaurants();
         LOGGER.info("Show entry set: " + restaurantMap.entrySet());
         LOGGER.info("Show map keys: " + restaurantMap.keySet());
@@ -78,13 +83,21 @@ public class Main {
         orderDishes.add(dish1);
         orderDishes.add(dish2);
 
-        LOGGER.info("First element: " + orderDishes.stream()
-                .findFirst().orElse(new Dish("Draniki", 120)));
-        LOGGER.info("Count salt usage in dishes: " + orderDishes.stream()
-                .flatMap(dish -> dish.getIngredients().stream().filter(ingredient -> "salt".equals(ingredient.getName())))
-                .count());
-        LOGGER.info("Show all ingredients: " + orderDishes.stream()
-                .map(dish -> new ArrayList<>(dish.getIngredients())).collect(Collectors.toList()));
+        Dish firstDish = orderDishes.stream()
+                .findFirst()
+                .orElse(new Dish("Draniki", 120));
+        LOGGER.info("First element: " + firstDish);
+
+        long saltUsageCount = orderDishes.stream()
+                .flatMap(dish -> dish.getIngredients().stream())
+                .filter(ingredient -> "salt".equals(ingredient.getName()))
+                .count();
+        LOGGER.info("Count salt usage in dishes: " + saltUsageCount);
+
+        List<List<Ingredient>> allIngredients = orderDishes.stream()
+                .map(Food::getIngredients)
+                .collect(Collectors.toList());
+        LOGGER.info("Show all ingredients: " + allIngredients);
 
         Courier courier = delivery.getCouriers().get(1);
         courier.setCar(new WvGolf("WV Golf", 30_000));
@@ -134,9 +147,18 @@ public class Main {
         List<Dish> dishes1 = order.getDishes();
         dishes1.forEach(RestaurantService::prepareDish);
 
-        LOGGER.info(dishes.keySet().stream()
+        String beforeRemoval = "Dishes before removal: " + dishes.get("burger king dishes").stream()
+                .map(Food::getName)
+                .collect(Collectors.toList());
+        LOGGER.info(beforeRemoval);
+
+        String afterRemoval = "Dishes keySet after removal: " + dishes.keySet().stream()
                 .filter("burger king dishes"::equals)
-                .peek(key -> dishes.get(key).remove(0)) + "Dishes keySet after removal: " + dishes);
+                .peek(key -> dishes.get(key).remove(0))
+                .flatMap(key -> dishes.get(key).stream())
+                .map(Food::getName)
+                .collect(Collectors.toList());
+        LOGGER.info(afterRemoval);
 
         restaurantMap.remove("kfc");
         LOGGER.info("Restaurants left after removal: " + restaurantMap.values());
@@ -146,13 +168,11 @@ public class Main {
         Car skyline = new Car("Nissan Skyline", 10_000);
         skyline.setFuelType(Vehicle.FuelType.GASOLINE);
 
-        LOGGER.info(Arrays.stream(Vehicle.FuelType.values())
-                .map(ft -> {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(ft).append("-").append(ft.getDisplayName());
-                    return sb;
-                })
-                .collect(Collectors.toList()));
+        List<StringBuilder> fuelTypes = Arrays.stream(Vehicle.FuelType.values())
+                .map(ft -> new StringBuilder(ft + "-" + ft.getDisplayName()))
+                .collect(Collectors.toList());
+
+        LOGGER.info("Fuel types: " + fuelTypes);
 
         Set<Car> carSet = new HashSet<>();
         carSet.add(lancer);
@@ -187,6 +207,21 @@ public class Main {
         Predicate<Restaurant> checkQuantity = (Restaurant -> (long) Restaurant.getDishes().size() >= 1);
         LOGGER.info("Restaurants with 1 or more dishes in menu" + RestaurantService.checkDishQuantity(checkQuantity, delivery));
 
+        Runnable runnable = () -> LOGGER.info("It's runnable: nothing to obtain and nothing to return.");
+        testRunnable(runnable);
+
+        Supplier<Client> supplier = () -> new Client("Kuzmich", LocalDate.of(1957, 11, 18));
+        LOGGER.info("Supplier returns new Client: " + getNewClient(supplier).getName());
+
+        Consumer<Client> consumer = vip -> vip.setId(5);
+        showClientId(consumer, getNewClient(supplier));
+
+        Function<Client, Long> function = Client::getId;
+        LOGGER.info("Returned client id, using Function: " + returnClientId(function, getNewClient(supplier)));
+
+        BiFunction<Integer, Integer, String> biFunction = (number1, number2) -> String.valueOf(number1 + number2);
+        LOGGER.info("Two integers in, one string result out: " + showSumAsString(biFunction, 6, 7));
+
         SparePart enkei = new Wheel();
         enkei.setBrand("Enkei");
         try {
@@ -202,5 +237,26 @@ public class Main {
         } catch (Exception e) {
             LOGGER.info("Failed to perform reflection.");
         }
+    }
+
+    private static void testRunnable(Runnable runnable) {
+        runnable.run();
+    }
+
+    private static Client getNewClient(Supplier<Client> supplier) {
+        return supplier.get();
+    }
+
+    private static void showClientId(Consumer<Client> consumer, Client client) {
+        consumer.accept(client);
+        LOGGER.info("Client new id: " + client.getId());
+    }
+
+    private static Long returnClientId(Function<Client, Long> function, Client client) {
+        return function.apply(client);
+    }
+
+    private static String showSumAsString(BiFunction<Integer, Integer, String> biFunction, int num1, int num2) {
+        return biFunction.apply(num1, num2);
     }
 }
