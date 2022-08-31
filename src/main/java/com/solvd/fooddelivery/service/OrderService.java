@@ -2,11 +2,13 @@ package com.solvd.fooddelivery.service;
 
 import com.solvd.fooddelivery.entity.Address;
 
+import java.util.Optional;
+
 public class OrderService {
 
-    public static int showDeliveryDistance(Address address) {
+    public static Optional<Integer> showDeliveryDistance(Address address) {
         District clientDistrict = address.getDistrict();
-        int distanceKm = 0;
+        Integer distanceKm = null;
         switch (clientDistrict) {
             case CENTRAL:
                 distanceKm = 10;
@@ -38,6 +40,6 @@ public class OrderService {
             default:
                 break;
         }
-        return distanceKm;
+        return Optional.ofNullable(distanceKm);
     }
 }

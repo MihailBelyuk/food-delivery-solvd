@@ -21,16 +21,17 @@ public class GeneralOrder extends Order {
 
     @Override
     public BigDecimal countOrderPriceWithDiscount(List<Dish> dishes) {
-        BigDecimal orderPrice = new BigDecimal(0);
-        for (Dish dish : dishes) {
-            BigDecimal dishPrice = dish.getPrice().multiply(new BigDecimal(dish.getDishQuantity()));
-            if (dishPrice.compareTo(new BigDecimal(0)) < 0) {
-                LOGGER.error("Price value is negative.");
-                throw new NegativePriceValueException("Price value is negative.");
-            }
-            orderPrice = orderPrice.add(dishPrice);
+        boolean priceCompare = dishes.stream()
+                .anyMatch(dish -> dish.getPrice().compareTo(BigDecimal.ZERO) < 0);
+        if (priceCompare) {
+            LOGGER.error("Negative price value is present.");
+            throw new NegativePriceValueException("Negative price value is present.");
         }
         BigDecimal discount = new BigDecimal(getDiscount()).divide(new BigDecimal(100));
+        BigDecimal orderPrice = dishes.stream()
+                .map(dish -> dish.getPrice().multiply(new BigDecimal(dish.getDishQuantity())))
+                .reduce(BigDecimal::add)
+                .orElseThrow();
         return orderPrice.subtract(orderPrice.multiply(discount)).setScale(2, RoundingMode.CEILING);
     }
 }

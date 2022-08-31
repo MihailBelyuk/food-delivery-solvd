@@ -4,6 +4,6 @@ import com.solvd.fooddelivery.exception.TooBigValueException;
 
 public interface IDoService extends IReplace<SparePart> {
 
-    void change() throws TooBigValueException;
+    void diagnose() throws TooBigValueException;
 
 }
