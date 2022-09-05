@@ -13,7 +13,7 @@ public class Courier extends Employee {
         super(name, dateOfBirth);
     }
 
-    public enum DeliveryType {
+    public enum DeliveryType  {
         CAR("car"),
         BICYCLE("bicycle"),
         ON_FOOT("on foot");
