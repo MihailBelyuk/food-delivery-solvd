@@ -7,16 +7,14 @@ public class ConnectionPool {
 
     private static final Integer POOL_SIZE = 5;
     private static ConnectionPool instance;
-    private final List<Connection> pool;
-    private final List<Connection> usedConnections;
+    private final List<Connection> connections;
 
     private ConnectionPool() {
-        pool = new ArrayList<>(POOL_SIZE);
+        connections = new ArrayList<>(POOL_SIZE);
         for (int i = 0; i < POOL_SIZE; i++) {
             Connection connection = new Connection();
-            pool.add(connection);
+            connections.add(connection);
         }
-        usedConnections = new ArrayList<>(POOL_SIZE);
     }
 
     public synchronized static ConnectionPool getInstance() {
@@ -27,21 +25,16 @@ public class ConnectionPool {
     }
 
     public synchronized Connection getConnection() {
-        Connection connection = pool.remove(pool.size() - 1);
-        usedConnections.add(connection);
-        if (pool.size() == 0) {
-            while (pool.size() != POOL_SIZE-1) {
-                releaseConnection(usedConnections.get(0));
-            }
+        if (connections.size() == 1) {
             pause();
-            System.out.println("sleeping");
+            System.out.println("Releasing connection");
+            releaseConnection(connections.get(0));
         }
-        return connection;
+        return connections.remove(connections.size() - 1);
     }
 
     public void releaseConnection(Connection connection) {
-        usedConnections.remove(connection);
-        pool.add(connection);
+        connections.add(connection);
     }
 
     private static void pause() {

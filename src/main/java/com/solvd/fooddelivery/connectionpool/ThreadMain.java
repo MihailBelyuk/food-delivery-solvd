@@ -10,6 +10,23 @@ public class ThreadMain {
     private static final ConnectionPool CONNECTION_POOL = ConnectionPool.getInstance();
 
     public static void main(String[] args) {
+        ConnectionPool connectionPool = ConnectionPool.getInstance();
+        Thread thread = new Thread(connectionPool.getConnection());
+        thread.start();
+        Thread thread1 = new Thread(connectionPool.getConnection());
+        thread1.start();
+        Thread thread2 = new Thread(connectionPool.getConnection());
+        thread2.start();
+        Thread thread3 = new Thread(connectionPool.getConnection());
+        thread3.start();
+        Thread thread4 = new Thread(connectionPool.getConnection());
+        thread4.start();
+        Thread thread5 = new Thread(connectionPool.getConnection());
+        thread5.start();
+        Thread thread6 = new Thread(connectionPool.getConnection());
+        thread6.start();
+        Thread thread7 = new Thread(connectionPool.getConnection());
+        thread7.start();
 
         EXECUTOR.execute(new Connection());
         EXECUTOR.execute(new Connection());
