@@ -3,7 +3,7 @@ package com.solvd.fooddelivery.connectionpool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Connection implements Runnable {
+public class Connection extends Thread {
 
     private static final Logger LOGGER = LogManager.getLogger(Connection.class);
 
@@ -30,8 +30,19 @@ public class Connection implements Runnable {
         return modified;
     }
 
+    public void login() {
+        LOGGER.info("Logged in.");
+    }
+
+    public void logout() {
+        LOGGER.info("Logged out.");
+    }
+
     @Override
     public void run() {
-        delete();read();create();update();
+        delete();
+        read();
+        update();
+        create();
     }
 }

@@ -1,32 +1,29 @@
 package com.solvd.fooddelivery.connectionpool;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ThreadMain {
 
+    private static final Logger LOGGER = (Logger) LogManager.getLogger(ThreadMain.class);
+
     private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
-    private static final ConnectionPool CONNECTION_POOL = ConnectionPool.getInstance();
+    private static final ConnectionPool CONNECTION_POOL = ConnectionPool.getInstance(5);
 
     public static void main(String[] args) {
-        ConnectionPool connectionPool = ConnectionPool.getInstance();
-        Thread thread = new Thread(connectionPool.getConnection());
-        thread.start();
-        Thread thread1 = new Thread(connectionPool.getConnection());
-        thread1.start();
-        Thread thread2 = new Thread(connectionPool.getConnection());
-        thread2.start();
-        Thread thread3 = new Thread(connectionPool.getConnection());
-        thread3.start();
-        Thread thread4 = new Thread(connectionPool.getConnection());
-        thread4.start();
-        Thread thread5 = new Thread(connectionPool.getConnection());
-        thread5.start();
-        Thread thread6 = new Thread(connectionPool.getConnection());
-        thread6.start();
-        Thread thread7 = new Thread(connectionPool.getConnection());
-        thread7.start();
+        for (int i = 0; i < 10; i++) {
+            Connection connection = CONNECTION_POOL.getConnection();
+            new Thread(connection).start();
+            if (CONNECTION_POOL.getConnections().size() == 0) {
+                pause();
+                CONNECTION_POOL.releaseConnection(connection);
+                LOGGER.info("Released connection");
+            }
+        }
 
         EXECUTOR.execute(new Connection());
         EXECUTOR.execute(new Connection());
@@ -43,20 +40,36 @@ public class ThreadMain {
 
         CompletableFuture<String> firstCf = CompletableFuture.supplyAsync(() -> new Connection().read(), EXECUTOR)
                 .thenApply(str -> str + " vasia");
-        System.out.println(firstCf.join());
+        CompletableFuture<String> secondCf = CompletableFuture.supplyAsync(() -> new Connection().read(), EXECUTOR)
+                .thenApplyAsync(str -> new Connection().replace(str))
+                .thenApplyAsync(str -> str + " back to vasia", EXECUTOR).thenApplyAsync(str -> str + " - the coolest guy");
+        CompletableFuture<Integer> thirdCf = CompletableFuture.supplyAsync(() -> 6, EXECUTOR)
+                .thenApplyAsync(num -> num + 1, EXECUTOR);
+        CompletableFuture<Void> futures = CompletableFuture.allOf(thirdCf, firstCf);
+        futures.join();
+        String first = firstCf.join();
+        String second = secondCf.join();
+        Integer third = thirdCf.join();
+        LOGGER.info(first);
+        LOGGER.info(second);
+        LOGGER.info(third);
 
-        CompletableFuture<String> replaceCf = CompletableFuture.supplyAsync(() -> new Connection().read(), EXECUTOR)
-                .thenApplyAsync(str -> new Connection().replace(str), EXECUTOR);
-        System.out.println(replaceCf.join());
+        CompletableFuture<Void> cf1 = CompletableFuture.runAsync(Connection::new, EXECUTOR);
+        CompletableFuture<Void> cf2 = CompletableFuture.runAsync(Connection::new, EXECUTOR);
+        CompletableFuture<Void> cf3 = CompletableFuture.runAsync(Connection::new, EXECUTOR);
+        CompletableFuture<Void> cf4 = CompletableFuture.runAsync(Connection::new, EXECUTOR);
+        CompletableFuture<Void> cf5 = CompletableFuture.runAsync(Connection::new, EXECUTOR);
+        CompletableFuture<Void> cf6 = CompletableFuture.runAsync(Connection::new, EXECUTOR);
+        CompletableFuture<Void> cf7 = CompletableFuture.runAsync(Connection::new, EXECUTOR);
+    }
 
-        CompletableFuture<Void> cf1 = CompletableFuture.runAsync(() -> new Connection().read(), EXECUTOR);
-        CompletableFuture<Void> cf2 = CompletableFuture.runAsync(() -> new Connection().read(), EXECUTOR);
-        CompletableFuture.runAsync(() -> new Connection().delete(), EXECUTOR);
-        CompletableFuture.runAsync(() -> new Connection().update(), EXECUTOR);
-        CompletableFuture.runAsync(() -> new Connection().create(), EXECUTOR);
-        CompletableFuture.runAsync(() -> new Connection().delete(), EXECUTOR);
-
-        CompletableFuture<Void> cfs = CompletableFuture.allOf(cf1, cf2).thenRunAsync(() -> System.out.println("info of two objects read"));
-        cfs.join();
+    private static void pause() {
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            LOGGER.info("Sleeping thread was interrupted.");
+        }
     }
 }
+
+

@@ -5,19 +5,21 @@ import java.util.List;
 
 public class ConnectionPool {
 
-    private static final Integer POOL_SIZE = 5;
+    private static int maxConnections;
     private static ConnectionPool instance;
     private final List<Connection> connections;
 
     private ConnectionPool() {
-        connections = new ArrayList<>(POOL_SIZE);
-        for (int i = 0; i < POOL_SIZE; i++) {
+        connections = new ArrayList<>(maxConnections);
+        for (int i = 0; i < maxConnections; i++) {
             Connection connection = new Connection();
+            connection.start();
             connections.add(connection);
         }
     }
 
-    public synchronized static ConnectionPool getInstance() {
+    public static ConnectionPool getInstance(int poolSize) {
+        maxConnections = poolSize;
         if (instance == null) {
             instance = new ConnectionPool();
         }
@@ -25,24 +27,16 @@ public class ConnectionPool {
     }
 
     public synchronized Connection getConnection() {
-        if (connections.size() == 1) {
-            pause();
-            System.out.println("Releasing connection");
-            releaseConnection(connections.get(0));
-        }
-        return connections.remove(connections.size() - 1);
+        Connection connection = connections.remove(connections.size() - 1);
+        return connection;
     }
 
     public void releaseConnection(Connection connection) {
         connections.add(connection);
     }
 
-    private static void pause() {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public List<Connection> getConnections() {
+        return connections;
     }
 }
 
