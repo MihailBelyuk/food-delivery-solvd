@@ -67,7 +67,7 @@ public class ThreadMain {
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
-            LOGGER.info("Sleeping thread was interrupted.");
+            LOGGER.error("Sleeping thread was interrupted.");
         }
     }
 }
