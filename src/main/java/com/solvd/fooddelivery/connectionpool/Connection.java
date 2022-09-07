@@ -3,12 +3,13 @@ package com.solvd.fooddelivery.connectionpool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Connection extends Thread {
+public class Connection {
 
     private static final Logger LOGGER = LogManager.getLogger(Connection.class);
 
     public void create() {
         LOGGER.info("Object created " + Thread.currentThread().getName());
+        pause();
     }
 
     public String read() {
@@ -38,11 +39,11 @@ public class Connection extends Thread {
         LOGGER.info("Logged out.");
     }
 
-    @Override
-    public void run() {
-        delete();
-        read();
-        update();
-        create();
+    private static void pause() {
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            LOGGER.error("Sleeping thread was interrupted.");
+        }
     }
 }

@@ -1,41 +1,51 @@
 package com.solvd.fooddelivery.connectionpool;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class ConnectionPool {
 
-    private static int maxConnections;
-    private static ConnectionPool instance;
-    private final List<Connection> connections;
+    private static final Logger LOGGER = LogManager.getLogger(ConnectionPool.class);
 
-    private ConnectionPool() {
-        connections = new ArrayList<>(maxConnections);
-        for (int i = 0; i < maxConnections; i++) {
+    private static ConnectionPool instance;
+    private final ArrayBlockingQueue<Connection> connections;
+
+    private ConnectionPool(int poolSize) {
+        connections = new ArrayBlockingQueue<>(poolSize);
+        for (int i = 0; i < poolSize; i++) {
             Connection connection = new Connection();
-            connection.start();
             connections.add(connection);
         }
     }
 
     public static ConnectionPool getInstance(int poolSize) {
-        maxConnections = poolSize;
         if (instance == null) {
-            instance = new ConnectionPool();
+            instance = new ConnectionPool(poolSize);
         }
         return instance;
     }
 
     public synchronized Connection getConnection() {
-        Connection connection = connections.remove(connections.size() - 1);
+        Connection connection = null;
+        try {
+            connection = connections.take();
+        } catch (InterruptedException e) {
+            LOGGER.error("Failed to extract connection.");
+        }
         return connection;
     }
 
     public void releaseConnection(Connection connection) {
-        connections.add(connection);
+        try {
+            connections.put(connection);
+        } catch (InterruptedException e) {
+            LOGGER.error("Failed to put back connection.");
+        }
     }
 
-    public List<Connection> getConnections() {
+    public ArrayBlockingQueue<Connection> getConnections() {
         return connections;
     }
 }
